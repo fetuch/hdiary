@@ -1,4 +1,7 @@
 export default {
+  privateRuntimeConfig: {
+    apiUrl: process.env.API_URL
+  },
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: 'hdiary',
@@ -38,16 +41,44 @@ export default {
     '@nuxtjs/axios',
     // https://go.nuxtjs.dev/pwa
     '@nuxtjs/pwa',
+    '@nuxtjs/auth-next',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
-  axios: {},
+  axios: {
+    baseURL: process.env.API_URL,
+    credentials: true,
+  },
+
+  auth: {
+    strategies: {
+      'laravelSanctum': {
+        provider: 'laravel/sanctum',
+        url: 'http://localhost:8000',
+        endpoints: {
+          login: {
+            url: '/api/login'
+          }
+        }
+      }
+    }
+  },
 
   // PWA module configuration: https://go.nuxtjs.dev/pwa
   pwa: {
     manifest: {
-      lang: 'en'
+      name: 'Hemodzienniczek aplikacja',
+      short_name: 'HemoDiaryApp',
+      lang: 'en',
+      display: 'standalone',
+    },
+    workbox: {
+      workboxExtensions: '@/plugins/sw-background-sync.js'
     }
+  },
+
+  router: {
+    middleware: ['auth']
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
